@@ -4,8 +4,9 @@ Download from W&B the raw dataset and apply some basic data cleaning, exporting 
 """
 import argparse
 import logging
-import wandb
 
+import pandas as pd
+import wandb
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)-15s %(message)s")
 logger = logging.getLogger()
@@ -13,8 +14,34 @@ logger = logging.getLogger()
 
 def go(args):
 
-    run = wandb.init(job_type="basic_cleaning")
+    run = wandb.init(project= "nyc_airbnb", group= "development", job_type="basic_cleaning")
     run.config.update(args)
+
+    logger.info("Downloading the input file(raw dataset)")
+    artifact_local_path = run.use_artifact(args.input_artifact).file()
+
+    df = pd.read_csv(artifact_local_path)
+
+    # min_price = 10
+    # max_price = 35
+    idx = df['price'].between(args.min_price, args.max_price)
+    df = df[idx].copy()
+    # Convert last_review to datetime
+    df['last_review'] = pd.to_datetime(df['last_review'])
+
+    ##Saving the artifact(cleaned dataset) to wandb
+    logger.info("Saving the cleaned dataset")
+
+    df.to_csv("clean_sample.csv", index=False)
+
+    artifact = wandb.Artifact(
+        name= args.output_artifact,
+        type= args.output_type,
+        description= args.output_description,
+    )
+
+    artifact.add_file("clean_sample.csv")
+    run.log_artifact(artifact)
 
     # Download input artifact. This will also log that this script is using this
     # particular version of the artifact

@@ -6,28 +6,28 @@ entry_points:
     parameters:
 
       input_artifact:
-        description: ## ADD DESCRIPTION
+        description: Raw data for cleaning
         type: string
 
       output_artifact:
-        description: ## ADD DESCRIPTION
+        description: Cleaned dataset
         type: string
 
       output_type:
-        description: ## ADD DESCRIPTION
+        description: cleaned data
         type: string
 
       output_description:
-        description: ## ADD DESCRIPTION
+        description: data set after preprocessing
         type: string
 
       min_price:
-        description: ## ADD DESCRIPTION
-        type: string
+        description: min price for treating outliers in price variable
+        type: float
 
       max_price:
-        description: ## ADD DESCRIPTION
-        type: string
+        description: max price for treating outliers in price variable
+        type: float
 
 
     command: >-

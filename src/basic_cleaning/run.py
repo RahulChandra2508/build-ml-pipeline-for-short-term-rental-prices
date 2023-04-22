@@ -18,7 +18,7 @@ def go(args):
     run.config.update(args)
 
     logger.info("Downloading the input file(raw dataset)")
-    artifact_local_path = run.use_artifact(args.input_artifact).file()
+    artifact_local_path = run.use_artifact(f"{args.input_artifact}:latest").file()
 
     df = pd.read_csv(artifact_local_path)
 

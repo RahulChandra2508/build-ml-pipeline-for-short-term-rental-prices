@@ -14,6 +14,10 @@ logger = logging.getLogger()
 
 def go(args):
 
+
+    # Download input artifact. This will also log that this script is using this
+    # particular version of the artifact 
+
     run = wandb.init(project= "nyc_airbnb", group= "development", job_type="basic_cleaning")
     run.config.update(args)
 
@@ -42,14 +46,6 @@ def go(args):
 
     artifact.add_file("clean_sample.csv")
     run.log_artifact(artifact)
-
-    # Download input artifact. This will also log that this script is using this
-    # particular version of the artifact
-    # artifact_local_path = run.use_artifact(args.input_artifact).file()
-
-    ######################
-    # YOUR CODE HERE     #
-    ######################
 
 
 if __name__ == "__main__":

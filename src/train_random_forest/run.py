@@ -7,6 +7,7 @@ import logging
 import os
 import shutil
 import matplotlib.pyplot as plt
+from pathlib import Path
 
 import mlflow
 from mlflow.models.signature import infer_signature
@@ -42,10 +43,10 @@ logger = logging.getLogger()
 
 def go(args):
 
-    run = wandb.init(job_type="train_random_forest")
+    run = wandb.init(project= "nyc_airbnb",group= "development", job_type="train_random_forest")
     run.config.update(args)
 
-    with open("config.yaml", "r") as fp:
+    with open(Path.joinpath(Path.cwd().parent.parent,"config.yaml"), "r") as fp:
         config = yaml.safe_load(fp)
 
     # Get the Random Forest configuration and update W&B
@@ -63,14 +64,20 @@ def go(args):
     ######################################
     # Use run.use_artifact(...).file() to get the train and validation artifact (args.trainval_artifact)
     # and save the returned path in train_local_pat
-    trainval_local_path = run.use_artifact(args.trainval_artifact).file()
+    trainval_local_path = run.use_artifact(f"{args.trainval_artifact}:latest").file()
     ######################################
 
     X = pd.read_csv(trainval_local_path)
+    # print(X)
     y = X.pop("price")  # this removes the column "price" from X and puts it into y
+    # print(y)
 
     logger.info(f"Minimum price: {y.min()}, Maximum price: {y.max()}")
 
+    # print("1")
+    # print(args.val_size)
+    # print(args.stratify_by)
+    # print(args.random_seed)
     X_train, X_val, y_train, y_val = train_test_split(
         X, y, test_size=args.val_size, stratify=X[args.stratify_by], random_state=args.random_seed
     )
@@ -240,7 +247,7 @@ def get_inference_pipeline(rf_config, max_tfidf_features):
     processed_features = ordinal_categorical + non_ordinal_categorical + zero_imputed + ["last_review", "name"]
 
     # Create random forest
-    random_Forest = RandomForestRegressor(**rf_config)
+    random_forest = RandomForestRegressor(**rf_config)
 
     ######################################
     # Create the inference pipeline. The pipeline must have 2 steps: a step called "preprocessor" applying the
@@ -249,7 +256,7 @@ def get_inference_pipeline(rf_config, max_tfidf_features):
     # HINT: Use the explicit Pipeline constructor so you can assign the names to the steps, do not use make_pipeline
     sk_pipe = Pipeline([
         ("preprocessor", preprocessor),
-        ("random_Forest", random_Forest)
+        ("random_forest", random_forest)
     ])
 
     return sk_pipe, processed_features
@@ -287,12 +294,13 @@ if __name__ == "__main__":
         required=False,
     )
 
-    parser.add_argument(
-        "--rf_config",
-        help="Random forest configuration. A JSON dict that will be passed to the "
-        "scikit-learn constructor for RandomForestRegressor.",
-        default="{}",
-    )
+    # parser.add_argument(
+    #     "--rf_config",
+    #     help="Random forest configuration. A JSON dict that will be passed to the "
+    #     "scikit-learn constructor for RandomForestRegressor.",
+    #     default="{}",
+    #     required= False
+    # )
 
     parser.add_argument(
         "--max_tfidf_features",
@@ -305,7 +313,8 @@ if __name__ == "__main__":
         "--output_artifact",
         type=str,
         help="Name for the output serialized model",
-        required=True,
+        default= "random_forest_export",
+        # required=True,
     )
 
     args = parser.parse_args()

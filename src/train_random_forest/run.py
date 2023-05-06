@@ -45,7 +45,7 @@ def go(args):
     run = wandb.init(job_type="train_random_forest")
     run.config.update(args)
 
-    with open("config.yaml","r") as fp:
+    with open("config.yaml", "r") as fp:
         config = yaml.safe_load(fp)
 
     # Get the Random Forest configuration and update W&B

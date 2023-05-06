@@ -1,5 +1,5 @@
 name: download_file
-conda_env: conda.yml
+conda_env: conda_env.yaml
 
 entry_points:
   main:
@@ -23,10 +23,10 @@ entry_points:
         type: string
         default: 'none'
 
-      rf_config:
-        description: Random forest configuration. A path to a JSON file with the configuration that will
-                     be passed to the scikit-learn constructor for RandomForestRegressor.
-        type: string
+      # rf_config:
+      #   description: Random forest configuration. A path to a JSON file with the configuration that will
+      #                be passed to the scikit-learn constructor for RandomForestRegressor.
+      #   type: string
 
       max_tfidf_features:
         description: Maximum number of words to consider for the TFIDF
@@ -35,12 +35,12 @@ entry_points:
       output_artifact:
         description: Name for the output artifact
         type: string
+        default: "random_fores
 
     command: >-
       python run.py --trainval_artifact {trainval_artifact} \
                     --val_size {val_size} \
                     --random_seed {random_seed} \
                     --stratify_by {stratify_by} \
-                    --rf_config {rf_config} \
                     --max_tfidf_features {max_tfidf_features} \
                     --output_artifact {output_artifact}

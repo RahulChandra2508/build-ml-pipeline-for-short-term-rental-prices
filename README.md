@@ -1,3 +1,4 @@
+wandb: https://wandb.ai/rc2508/nyc_airbnb?workspace=user-rahulchandra1918
 GITHUB Link = https://github.com/RahulChandra2508/build-ml-pipeline-for-short-term-rental-prices
 
 # Build an ML Pipeline for Short-Term Rental Prices in NYC
